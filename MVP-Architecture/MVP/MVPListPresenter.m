@@ -6,10 +6,8 @@
 //
 
 #import "MVPListPresenter.h"
-#import <UIKit/UIKit.h>
 
-
-@interface MVPListPresenter ()
+@interface MVPListPresenter () <MVPListDatasourceDelegate>
 
 ///
 @property (nonatomic, strong) MVPListDatasource *datasource;
@@ -25,7 +23,7 @@
     self = [super init];
     if (self) {
         self.datasource = [[MVPListDatasource alloc] init];
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_updateDataNotification:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+        self.datasource.delegate = self;
     }
     return self;
 }
@@ -61,19 +59,13 @@
     }
 }
 
-/// auto update data
-- (void)_updateDataNotification:(NSNotification *)notification
-{
-    [self update];
-}
-
 #pragma mark - Handle Action
 - (void)handleClickActionAtIndex:(NSInteger)index
 {
     MVPListMoel *model = self.dataArray[index];
     model.name = [NSString stringWithFormat:@"%u-changed", arc4random() % 9];
     // model -> ui
-    [self _updateDataNotification:nil];
+    [self update];
 }
 
 - (void)handleInsertDataAction
@@ -82,6 +74,13 @@
     [dataArray addObject:[MVPListMoel modelWithName:@"新增01" age:33]];
     self.dataArray = dataArray.copy;
     
+    [self update];
+}
+
+#pragma mark - DatasourceDelegate
+- (void)updateWithDataArray:(NSArray *)dataArray
+{
+    self.dataArray = dataArray.copy;
     [self update];
 }
 

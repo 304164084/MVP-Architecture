@@ -9,6 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol MVPListDatasourceDelegate <NSObject>
+
+- (void)updateWithDataArray:(NSArray *)dataArray;
+
+@end
+
 @interface MVPListMoel : NSObject
 
 @property (nonatomic, copy) NSString *name;
@@ -21,7 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MVPListDatasource : NSObject
 
-@property (nonatomic, strong) NSArray *dataArray;
+/*
+ 这里可以采用block的方式代替delegate, 具体看个人或团队喜好.
+ */
+@property (nonatomic, weak) id<MVPListDatasourceDelegate> delegate;
 
 - (void)requestDataWithCompletionHandler:(void (^)(NSArray<MVPListMoel *> *data))completionHandler;
 
